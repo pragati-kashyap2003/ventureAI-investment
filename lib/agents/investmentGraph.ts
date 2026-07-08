@@ -24,7 +24,7 @@ const AgentStateAnnotation = Annotation.Root({
 
 export type AgentState = typeof AgentStateAnnotation.State;
 
-// Build the LangGraph state machine
+// Build the LangGraph state machine with parallelization
 function buildInvestmentGraph() {
   const graph = new StateGraph(AgentStateAnnotation)
     .addNode("webResearcher", webResearcherNode)
@@ -32,11 +32,14 @@ function buildInvestmentGraph() {
     .addNode("financialAnalyst", financialAnalystNode)
     .addNode("riskAssessor", riskAssessorNode)
     .addNode("verdictWriter", verdictWriterNode)
-    // Sequential pipeline: research → sentiment → financial → risk → verdict
+    // Optimized pipeline: web research first, then parallel analysis, then verdict
     .addEdge(START, "webResearcher")
     .addEdge("webResearcher", "sentimentAnalyst")
-    .addEdge("sentimentAnalyst", "financialAnalyst")
-    .addEdge("financialAnalyst", "riskAssessor")
+    .addEdge("webResearcher", "financialAnalyst")
+    .addEdge("webResearcher", "riskAssessor")
+    // All analysis nodes converge to verdict
+    .addEdge("sentimentAnalyst", "verdictWriter")
+    .addEdge("financialAnalyst", "verdictWriter")
     .addEdge("riskAssessor", "verdictWriter")
     .addEdge("verdictWriter", END);
 

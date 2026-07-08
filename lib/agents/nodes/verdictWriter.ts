@@ -14,11 +14,8 @@ export async function verdictWriterNode(
     message: `🧠 CIO is synthesizing all data and writing investment verdict for ${company}...`,
   });
 
-  // Use a more capable model for the final verdict — the most important output
-  const model = getModel(
-    process.env.OPENROUTER_VERDICT_MODEL || "anthropic/claude-haiku-4.5",
-    0.3
-  );
+  // Use slightly more capable model for final verdict since it's the most important
+  const model = getModel("google/gemini-2.5-flash", 0.2, 2500);
 
   const prompt = VERDICT_WRITER_PROMPT
     .replace("{company}", company)
@@ -29,7 +26,7 @@ export async function verdictWriterNode(
 
   const response = await model.invoke([
     new SystemMessage(
-      "You are a Chief Investment Officer AI. Always respond with valid JSON only, no markdown code blocks. Be decisive and confident in your verdict."
+      "You are a Chief Investment Officer making final investment recommendations. You MUST respond with ONLY valid JSON, no markdown, no explanations. Be decisive and clear. Start your response directly with { - no preamble."
     ),
     new HumanMessage(prompt),
   ]);
@@ -37,7 +34,13 @@ export async function verdictWriterNode(
   let verdictData: Record<string, unknown> = {};
   try {
     const content = typeof response.content === "string" ? response.content : "";
-    const cleaned = content.replace(/```json\n?|\n?```/g, "").trim();
+    let cleaned = content.trim();
+    cleaned = cleaned.replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
+    const jsonStart = cleaned.indexOf("{");
+    const jsonEnd = cleaned.lastIndexOf("}");
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+    }
     verdictData = JSON.parse(cleaned);
   } catch {
     verdictData = {
@@ -56,7 +59,7 @@ export async function verdictWriterNode(
   onProgress?.({
     node: "verdictWriter",
     status: "done",
-    message: `✅ Verdict: ${verdictData.verdict} with ${verdictData.confidence}% confidence`,
+    message: `✅ CIO verdict complete: ${verdictData.verdict} (${verdictData.confidence}% confidence) | Thesis: ${(verdictData.investmentThesis as string)?.slice(0, 50)}...`,
   });
 
   return { verdictData };

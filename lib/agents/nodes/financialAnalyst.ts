@@ -14,7 +14,7 @@ export async function financialAnalystNode(
     message: `📊 Running financial analysis and scoring for ${company}...`,
   });
 
-  const model = getModel("google/gemini-2.5-flash", 0.1);
+  const model = getModel("google/gemini-2.5-flash", 0.1, 1800);
 
   const prompt = FINANCIAL_ANALYST_PROMPT
     .replace("{company}", company)
@@ -23,7 +23,7 @@ export async function financialAnalystNode(
 
   const response = await model.invoke([
     new SystemMessage(
-      "You are a financial analysis AI. Always respond with valid JSON only, no markdown code blocks."
+      "You are a Bloomberg equity analyst. You MUST respond with ONLY valid JSON, no markdown, no explanations. Be precise with numeric scores (0-100). Start your response directly with { - no preamble."
     ),
     new HumanMessage(prompt),
   ]);
@@ -31,7 +31,13 @@ export async function financialAnalystNode(
   let financialData: Record<string, unknown> = {};
   try {
     const content = typeof response.content === "string" ? response.content : "";
-    const cleaned = content.replace(/```json\n?|\n?```/g, "").trim();
+    let cleaned = content.trim();
+    cleaned = cleaned.replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
+    const jsonStart = cleaned.indexOf("{");
+    const jsonEnd = cleaned.lastIndexOf("}");
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+    }
     financialData = JSON.parse(cleaned);
   } catch {
     financialData = {
@@ -49,7 +55,7 @@ export async function financialAnalystNode(
   onProgress?.({
     node: "financialAnalyst",
     status: "done",
-    message: `✅ Financial score: ${financialData.financialScore}/100 | Growth: ${financialData.growthScore}/100`,
+    message: `✅ Financial analysis complete: Score ${financialData.financialScore}/100 | Growth ${financialData.growthScore}/100 | Moat ${financialData.moatScore}/100`,
   });
 
   return { financialData };

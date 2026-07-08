@@ -14,7 +14,7 @@ export async function riskAssessorNode(
     message: `⚠️ Assessing market, competitive, and regulatory risks for ${company}...`,
   });
 
-  const model = getModel("google/gemini-2.5-flash", 0.2);
+  const model = getModel("google/gemini-2.5-flash", 0.15, 1800);
 
   const prompt = RISK_ASSESSOR_PROMPT
     .replace("{company}", company)
@@ -23,7 +23,7 @@ export async function riskAssessorNode(
 
   const response = await model.invoke([
     new SystemMessage(
-      "You are a risk assessment AI. Always respond with valid JSON only, no markdown code blocks."
+      "You are a Bloomberg risk strategist. You MUST respond with ONLY valid JSON, no markdown, no explanations. Be thorough in risk identification. Start your response directly with { - no preamble."
     ),
     new HumanMessage(prompt),
   ]);
@@ -31,7 +31,13 @@ export async function riskAssessorNode(
   let riskData: Record<string, unknown> = {};
   try {
     const content = typeof response.content === "string" ? response.content : "";
-    const cleaned = content.replace(/```json\n?|\n?```/g, "").trim();
+    let cleaned = content.trim();
+    cleaned = cleaned.replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
+    const jsonStart = cleaned.indexOf("{");
+    const jsonEnd = cleaned.lastIndexOf("}");
+    if (jsonStart !== -1 && jsonEnd !== -1) {
+      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+    }
     riskData = JSON.parse(cleaned);
   } catch {
     riskData = {
@@ -49,7 +55,7 @@ export async function riskAssessorNode(
   onProgress?.({
     node: "riskAssessor",
     status: "done",
-    message: `✅ Risk level: ${riskData.overallRiskLevel} | Risk score: ${riskData.riskScore}/100`,
+    message: `✅ Risk assessment complete: ${riskData.overallRiskLevel} risk | Score ${riskData.riskScore}/100`,
   });
 
   return { riskData };
