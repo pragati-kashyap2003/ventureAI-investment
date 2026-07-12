@@ -24,7 +24,7 @@ Generate professional AI-driven investment reports in seconds.
 ## Application Preview
 
 <a href="https://venture-ai-investment.vercel.app">
-<img src="docs/screenshots/landing-page.png" width="100%">
+<img src="docs/screenshot/landing-page.png" width="100%">
 </a>
 
 Instead of manually reading financial reports and news articles, users simply enter a company name and receive an AI-generated investment report containing:
