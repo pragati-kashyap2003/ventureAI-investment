@@ -1,29 +1,31 @@
-# VentureAI – AI Investment Research Agent
 
-An AI-powered investment research platform that helps users evaluate whether to invest in a company by generating structured investment reports using Large Language Models (LLMs).
+<div align="center">
 
-🌐 **Live Demo:** https://venture-ai-investment.vercel.app/
+# 🚀 VentureAI
 
-💻 **GitHub Repository:** https://github.com/pragati-kashyap2003/ventureAI-investment
+### AI-Powered Investment Research Agent
+
+Generate professional AI-driven investment reports in seconds.
+
+<br>
+
+<a href="https://venture-ai-investment.vercel.app">
+<img src="https://img.shields.io/badge/🌐_Live_Demo-Open_App-success?style=for-the-badge">
+</a>
+
+<a href="https://github.com/pragati-kashyap2003/ventureAI-investment">
+<img src="https://img.shields.io/badge/💻_GitHub-Repository-black?style=for-the-badge&logo=github">
+</a>
+
+</div>
 
 ---
 
 ## Application Preview
 
-### Home Page
-
-<img src="docs/screenshot/landing page.png" width="900"/>
-
-### Analysis Dashboard
-
-<img src="docs/screenshot/dashboard.png" width="900"/>
-
-### Generated Investment Report
-
-<img src="docs/screenshot/report.png" width="900"/>
-# Overview
-
-VentureAI is a web application that simplifies investment research by generating professional reports for publicly listed companies.
+<a href="https://venture-ai-investment.vercel.app">
+<img src="docs/screenshots/landing-page.png" width="100%">
+</a>
 
 Instead of manually reading financial reports and news articles, users simply enter a company name and receive an AI-generated investment report containing:
 
