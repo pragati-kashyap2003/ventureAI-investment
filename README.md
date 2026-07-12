@@ -12,15 +12,15 @@ An AI-powered investment research platform that helps users evaluate whether to 
 
 ### Home Page
 
-<img src="docs/screenshots/landing page.png" width="900"/>
+<img src="docs/screenshot/landing page.png" width="900"/>
 
 ### Analysis Dashboard
 
-<img src="docs/screenshots/dashboard.png" width="900"/>
+<img src="docs/screenshot/dashboard.png" width="900"/>
 
 ### Generated Investment Report
 
-<img src="docs/screenshots/report.png" width="900"/>
+<img src="docs/screenshot/report.png" width="900"/>
 # Overview
 
 VentureAI is a web application that simplifies investment research by generating professional reports for publicly listed companies.
